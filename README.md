@@ -1,5 +1,5 @@
 # Continuum-Robot-Modeling-with-Action-Conditioned-Flow-Matching
-This is a **TDCR Modeling** project based on **Flow Matching**, implemented in **PyTorch**.
+A **TDCR modeling** project based on **action-conditioned flow matching**, implemented in **PyTorch**.
 
 Tested on:
 - Windows 11 + CUDA 13.0 + NVIDIA GeForce RTX 5090
@@ -159,14 +159,16 @@ PY
 ```
 
 ## Dataset
-制作数据集，以sim_2m_with_base为例：
+
+To build a dataset (example: `sim_2m_with_base`):
+
 ```sh
 cd sim
 export MUJOCO_GL=egl
 export EGL_LOG_LEVEL=fatal
 export LIBEGL_DEBUG=fatal
 
-阶段1:采集数据
+# Stage 1: collect raw samples
 python tdcr_pipeline.py collect \
   --xml tdcr2_with_base.xml \
   --nsample 5000 \
@@ -182,7 +184,7 @@ python tdcr_pipeline.py collect \
   --zero_vel_each_ctrl \
   --relax_max_steps 10000
 
-阶段2:制作 H5（新增 motor_dir）
+# Stage 2: build the H5 dataset (note: `motor_dir` is required)
 python tdcr_pipeline.py make-h5 \
   --pc_dir "2m_with_base/pointcloud" \
   --motor_dir "2m_with_base/motor" \
@@ -191,7 +193,7 @@ python tdcr_pipeline.py make-h5 \
   --workers 32 --dtype float32 \
   --val_frac 0.1 --test_frac 0.1 --save_rgb
 
-阶段3:补写归一化 原点不变 只缩放不平移
+# Stage 3: write normalization metadata (keep the origin fixed; scale only, no translation)
 python tdcr_pipeline.py add-norm \
   --root 2m_with_base/ --mode global --scope all \
   --anchor origin \
@@ -201,10 +203,11 @@ python tdcr_pipeline.py add-norm \
 
 ## Training
 
-同样以sim_2m_with_base为例，展示MLP和Hybrid两种Backbone的训练指令：
+Example training commands for `sim_2m_with_base`, using either an MLP backbone or the Hybrid backbone:
+
 ```sh
 
-# MLP backbone的
+# MLP backbone
 export CUDA_VISIBLE_DEVICES=5
 python train_flowmatching.py \
   --data_dir datasets/sim/2m_with_base \
@@ -220,7 +223,7 @@ python train_flowmatching.py \
   --sample_steps 100 \
   --out_dir runs/sim_2m_with_base_mlp
 
-# Hybrid Backbone的
+# Hybrid backbone
 export CUDA_VISIBLE_DEVICES=1
 python train_flowmatching.py \
   --data_dir datasets/sim/2m_with_base \
@@ -246,7 +249,9 @@ python train_flowmatching.py \
 ```
 
 ## Demo
-这个demo展示了输入电机指令，让模型预测出每一步的点云结果，并保存。这里只展示使用hybrid训练结果的代码。您可以选择任何checkpoints来进行demo。即使是no_base的checkpoints也可以实现,只需使用对应的eval_norm_json文件即可，均提供在sim/dataset_norm_json目录下。
+This demo takes motor commands as input and predicts a point cloud at each step, then saves the results.
+The examples below use a Hybrid checkpoint, but you can run the demo with any checkpoint.
+If you use a `no_base` checkpoint, make sure to pass the matching `eval_norm_json` file (provided under `sim/dataset_norm_json/`).
 
 ```sh
 python demo.py \
