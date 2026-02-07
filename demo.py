@@ -196,8 +196,10 @@ def make_prior(
 
 
 # ============================================================
-# 反归一化：raw = norm * scale + center
+# De-normalization: raw = norm * scale + center
 # ============================================================
+# global_norm_*.json typically stores center/scale statistics per scope, e.g.:
+#   {"all": {"center": [0, 0, 0], "scale": 1.0}}
 def load_global_center_scale(global_norm_json: str) -> Tuple[np.ndarray, float, Dict[str, Any]]:
     with open(global_norm_json, "r") as f:
         obj = json.load(f)
@@ -236,8 +238,12 @@ def denorm_xyz(xyz_norm: np.ndarray, center: np.ndarray, scale: float) -> np.nda
 
 
 # ============================================================
-# 从 motor json 推断 global_norm json
+# Resolve global_norm json (heuristics: from motor json fields or nearby files)
 # ============================================================
+# Resolution order:
+#   1) Explicit --eval_norm_json
+#   2) Paths referenced from a few motor jsons
+#   3) Files near stats_file / test_dir (walking up parents)
 def _try_find_global_norm_json_near(path_like: str) -> Optional[str]:
     if not path_like:
         return None
@@ -305,16 +311,17 @@ def resolve_global_norm_json(
             return str(any_json[0])
 
     raise FileNotFoundError(
-        "无法自动找到点云 global_norm_*.json。\n"
-        "建议：\n"
-        "1) 在 motor json 里增加字段 pc_norm_json 指向 global_norm_*.json；或\n"
-        "2) 运行时显式传 --eval_norm_json datasets/.../global_norm_*.json"
+        "Could not automatically locate point-cloud normalization metadata (global_norm_*.json).\n"
+        "Suggestions:\n"
+        "1) Add a valid path in the motor json under one of: data_norm_json / eval_norm_json / global_norm_json; or\n"
+        "2) Pass an explicit file via --eval_norm_json datasets/.../global_norm_*.json"
     )
 
 
 # ============================================================
-# 读取 ctrl：优先 ctrl_norm，否则 ctrl；必要时从 raw 归一化到 [0,1]
+# Read control vector: prefer ctrl_norm, else ctrl; optionally normalize raw values to [0, 1]
 # ============================================================
+# If ctrl values appear out of [0,1] and per-dimension min/max are provided, normalize them.
 def read_ctrl_norm_from_motor_json(obj: Dict[str, Any]) -> np.ndarray:
     if "ctrl_norm" in obj:
         ctrl = np.asarray(obj["ctrl_norm"], dtype=np.float32).reshape(-1)
@@ -534,7 +541,7 @@ def main() -> None:
 
             # save
             for b, stem in enumerate(stems):
-                # 1) 保存归一化 pred
+                # 1) Save normalized prediction (model output space)
                 pn = pred_np[b]
                 norm_path = str(out_norm / f"{stem}.ply")
                 if point_dim == 6:
@@ -544,7 +551,7 @@ def main() -> None:
                 else:
                     write_ply_xyz(norm_path, pn[:, :3])
 
-                # 2) 保存反归一化 pred（只对 xyz 反归一化）
+                # 2) Save de-normalized prediction (apply de-normalization to xyz only)
                 xyz_den = denorm_xyz(pn[:, :3], center=center, scale=scale)
                 den_path = str(out_den / f"{stem}.ply")
                 if point_dim == 6:
