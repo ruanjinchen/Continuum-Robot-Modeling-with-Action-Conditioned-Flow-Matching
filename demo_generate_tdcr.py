@@ -579,6 +579,5 @@ def main() -> None:
 
     print(f"[Demo2] Done. Output: {str(out_root.resolve())}")
 
-
 if __name__ == "__main__":
     main()

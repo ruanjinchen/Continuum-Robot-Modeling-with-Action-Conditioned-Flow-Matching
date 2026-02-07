@@ -1,0 +1,25 @@
+{
+  "xml": "tdcr2_with_base.xml",
+  "seed": 42,
+  "duration_sec": 10.0,
+  "hz": 60.0,
+  "T": 600,
+  "res_w": 1280,
+  "res_h": 720,
+  "backend": "auto",
+  "sim_mode": "step",
+  "sim_steps": 0,
+  "relax_max_steps": 30000,
+  "wait_stable_before_capture": true,
+  "cameras": [
+    "camera1",
+    "camera2",
+    "camera3",
+    "camera4",
+    "camera5",
+    "camera6",
+    "camera7",
+    "camera8"
+  ],
+  "img_format": "png"
+}
