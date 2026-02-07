@@ -249,6 +249,17 @@ python train_flowmatching.py \
 ```
 
 ## Demo
+### Download checkpoints
+
+Download the pretrained checkpoints from Amazon S3 and extract them into `checkpoints/`:
+
+```sh
+mkdir -p checkpoints
+wget -O tdcr-checkpoints.zip https://anonymous-for-submit.s3.us-east-1.amazonaws.com/tdcr-checkpoints.zip
+unzip -o tdcr-checkpoints.zip -d checkpoints
+rm tdcr-checkpoints.zip
+```
+
 This demo takes motor commands as input and predicts a point cloud at each step, then saves the results.
 The examples below use a Hybrid checkpoint, but you can run the demo with any checkpoint.
 If you use a `no_base` checkpoint, make sure to pass the matching `eval_norm_json` file (provided under `sim/dataset_norm_json/`).
