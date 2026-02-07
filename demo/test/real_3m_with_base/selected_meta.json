@@ -1,0 +1,41 @@
+{
+  "dataset_root": "/data/yxk/K-data/K/fllm-sm/datasets/real/3m_with_base",
+  "split": "test",
+  "out_dir": "/data/yxk/K-data/K/fllm-sm/sim/test/real_3m_with_base",
+  "k": 3,
+  "seed": 1042,
+  "start_id": 1,
+  "copy_global_files": true,
+  "save_norm_ply": false,
+  "global_motors_npz": "/data/yxk/K-data/K/fllm-sm/sim/test/real_3m_with_base/global_motors_scope-all.npz",
+  "global_norm_json": "/data/yxk/K-data/K/fllm-sm/sim/test/real_3m_with_base/global_norm_scope-all_anchor-origin.json",
+  "samples": [
+    {
+      "out_id": 1,
+      "stem": "000001",
+      "src_shard": "/data/yxk/K-data/K/fllm-sm/datasets/real/3m_with_base/test/shard-00000.h5",
+      "src_row": 6,
+      "npoints": 20000,
+      "has_rgb": true,
+      "motor_dim": 9
+    },
+    {
+      "out_id": 2,
+      "stem": "000002",
+      "src_shard": "/data/yxk/K-data/K/fllm-sm/datasets/real/3m_with_base/test/shard-00000.h5",
+      "src_row": 751,
+      "npoints": 20000,
+      "has_rgb": true,
+      "motor_dim": 9
+    },
+    {
+      "out_id": 3,
+      "stem": "000003",
+      "src_shard": "/data/yxk/K-data/K/fllm-sm/datasets/real/3m_with_base/test/shard-00000.h5",
+      "src_row": 357,
+      "npoints": 20000,
+      "has_rgb": true,
+      "motor_dim": 9
+    }
+  ]
+}

@@ -246,29 +246,46 @@ python train_flowmatching.py \
 ```
 
 ## Demo
-这个demo展示了输入一个控制序列，让模型预测出每一次控制结果，并保存点云
+这个demo展示了输入电机指令，让模型预测出每一步的点云结果，并保存。这里只展示使用hybrid训练结果的代码。您可以选择任何checkpoints来进行demo。即使是no_base的checkpoints也可以实现,只需使用对应的eval_norm_json文件即可，均提供在sim/dataset_norm_json目录下。
+
 ```sh
-export CUDA_VISIBLE_DEVICES=5
-SEQ_ROOT=demo
-
-python demo_tdcr_motor_seq_pred.py \
-  --ckpt final_results/sim/mlp/sim_2m_with_base_mlp_12_28/ckpts/latest.pt \
-  --motor_seq ${SEQ_ROOT}/sim_2m_with_base/motor_seq.json \
-  --demo_out demo/sim_2m_with_base_mlp_demo2_seq_pred \
-  --eval_norm_json sim/dataset_norm_json/global_norm_scope-all_anchor-origin.json \
-  --npoints 20000 \
+python demo.py \
+  --ckpt checkpoints/real_2m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --test_dir demo/test/real_2m_with_base \
+  --demo_out test_demo/real_2m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/real_2m_with_base.json \
   --sample_steps 100 \
-  --batch_size 1 \
-  --seed 123
+  --batch_size 16
 
-python demo_tdcr_motor_seq_pred.py \
-  --ckpt final_results/sim/hybrid/sim_2m_with_base_hybrid_1_2/ckpts/latest.pt \
-  --motor_seq ${SEQ_ROOT}/sim_2m_with_base/motor_seq.json \
-  --demo_out demo/sim_2m_with_base_hybrid_demo2_seq_pred \
-  --eval_norm_json sim/dataset_norm_json/global_norm_scope-all_anchor-origin.json \
-  --npoints 20000 \
+python demo.py \
+  --ckpt checkpoints/real_3m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --test_dir demo/test/real_3m_with_base \
+  --demo_out test_demo/real_3m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/real_3m_with_base.json \
   --sample_steps 100 \
-  --batch_size 1 \
-  --seed 123
+  --batch_size 16
 
+python demo.py \
+  --ckpt checkpoints/sim_2m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --test_dir demo/test/2m_with_base \
+  --demo_out test_demo/sim_2m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/2m_with_base.json \
+  --sample_steps 100 \
+  --batch_size 16
+
+python demo.py \
+  --ckpt checkpoints/sim_3m_with_base_hybrid_1_3/ckpts/latest.pt \
+  --test_dir demo/test/3m_with_base \
+  --demo_out test_demo/sim_3m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/3m_with_base.json \
+  --sample_steps 100 \
+  --batch_size 16
+
+python demo.py \
+  --ckpt checkpoints/sim_5m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --test_dir demo/test/5m_with_base \
+  --demo_out test_demo/sim_5m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/5m_with_base.json \
+  --sample_steps 100 \
+  --batch_size 16
 ```

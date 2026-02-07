@@ -1,0 +1,53 @@
+{
+  "ctrl": [
+    0.3849802315235138,
+    0.7248718738555908,
+    0.38795462250709534,
+    0.703667402267456,
+    0.5138111114501953,
+    0.2885390818119049
+  ],
+  "ctrl_raw": [
+    709.0,
+    640.0,
+    680.0,
+    4039.0,
+    3660.0,
+    1389.0
+  ],
+  "actuator_names": [
+    "motor1",
+    "motor2",
+    "motor3",
+    "motor4",
+    "motor5",
+    "motor6"
+  ],
+  "norm": {
+    "type": "minmax",
+    "key": "all",
+    "stats_file": "/data/yxk/K-data/K/fllm-sm/sim/test/real_2m_with_base/global_motors_scope-all.npz",
+    "min": [
+      -265.0,
+      -1199.0,
+      -312.0,
+      451.0,
+      1000.0,
+      -114.0
+    ],
+    "max": [
+      2265.0,
+      1338.0,
+      2245.0,
+      5550.0,
+      6177.0,
+      5095.0
+    ]
+  },
+  "source": {
+    "dataset_root": "/data/yxk/K-data/K/fllm-sm/datasets/real/2m_with_base",
+    "split": "test",
+    "shard": "shard-00000.h5",
+    "row": 89
+  }
+}
