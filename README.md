@@ -255,7 +255,7 @@ If you use a `no_base` checkpoint, make sure to pass the matching `eval_norm_jso
 
 ```sh
 python demo.py \
-  --ckpt checkpoints/real_2m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --ckpt checkpoints/real_2m_with_base_hybrid.pt \
   --test_dir demo/test/real_2m_with_base \
   --demo_out test_demo/real_2m_with_base_hybrid \
   --eval_norm_json sim/dataset_norm_json/real_2m_with_base.json \
@@ -263,7 +263,7 @@ python demo.py \
   --batch_size 16
 
 python demo.py \
-  --ckpt checkpoints/real_3m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --ckpt checkpoints/real_3m_with_base_hybrid.pt \
   --test_dir demo/test/real_3m_with_base \
   --demo_out test_demo/real_3m_with_base_hybrid \
   --eval_norm_json sim/dataset_norm_json/real_3m_with_base.json \
@@ -271,7 +271,7 @@ python demo.py \
   --batch_size 16
 
 python demo.py \
-  --ckpt checkpoints/sim_2m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --ckpt checkpoints/sim_2m_with_base_hybrid.pt \
   --test_dir demo/test/2m_with_base \
   --demo_out test_demo/sim_2m_with_base_hybrid \
   --eval_norm_json sim/dataset_norm_json/2m_with_base.json \
@@ -279,7 +279,7 @@ python demo.py \
   --batch_size 16
 
 python demo.py \
-  --ckpt checkpoints/sim_3m_with_base_hybrid_1_3/ckpts/latest.pt \
+  --ckpt checkpoints/sim_3m_with_base_hybrid.pt \
   --test_dir demo/test/3m_with_base \
   --demo_out test_demo/sim_3m_with_base_hybrid \
   --eval_norm_json sim/dataset_norm_json/3m_with_base.json \
@@ -287,7 +287,7 @@ python demo.py \
   --batch_size 16
 
 python demo.py \
-  --ckpt checkpoints/sim_5m_with_base_hybrid_1_2/ckpts/latest.pt \
+  --ckpt checkpoints/sim_5m_with_base_hybrid.pt \
   --test_dir demo/test/5m_with_base \
   --demo_out test_demo/sim_5m_with_base_hybrid \
   --eval_norm_json sim/dataset_norm_json/5m_with_base.json \
