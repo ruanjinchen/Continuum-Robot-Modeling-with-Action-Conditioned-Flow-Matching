@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<mujoco model="TDCR">
+
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <include file="scene.xml"/>
+
+  <option timestep="0.002" gravity="0 0 -9.81"/>
+
+  <asset>
+    <mesh name="base_mesh" file="base.stl"/>
+  </asset>
+
+  <default>
+    <geom density="25" friction="0.8 0.1 0.1" rgba="0.6 0.6 0.9 1"/>
+    <joint damping="0.1" armature="0.01" limited="false"/>
+    <site  size="0.002" rgba="1 0.4 0.4 1"/>
+  </default>
+
+  <worldbody>
+    <camera name="camera1" pos="0.000 -0.500 0.270" quat="0.77334 0.63399 -0.00000 -0.00000" fovy="45"/>
+    <camera name="camera2" pos="0.000 0.500 0.270" quat="-0.00000 0.00000 0.63399 0.77334" fovy="45"/>
+    <camera name="camera3" pos="0.500 0.000 0.270" quat="0.54684 0.44830 0.44830 0.54684" fovy="45"/>
+    <camera name="camera4" pos="-0.500 0.000 0.270" quat="-0.54684 -0.44830 0.44830 0.54684" fovy="45"/>
+    <camera name="camera5" pos="0.354 0.354 0.270" quat="0.29595 0.24262 0.58573 0.71447" fovy="45"/>
+    <camera name="camera6" pos="-0.354 0.354 0.270" quat="0.29595 0.24262 -0.58573 -0.71447" fovy="45"/>
+    <camera name="camera7" pos="-0.354 -0.354 0.270" quat="0.71447 0.58573 -0.24262 -0.29595" fovy="45"/>
+    <camera name="camera8" pos="0.354 -0.354 0.270" quat="0.71447 0.58573 0.24262 0.29595" fovy="45"/>
+
+    <body name="base" pos="0 0 0.174">
+      <!-- Light yellow base; 174 mm above ground. Put the offset in the body pos, not the geom. -->
+      <geom type="mesh" mesh="base_mesh" rgba="0.902 0.886 0.725 1.0" contype="0" conaffinity="0" group="1"/>
+      <site name="b00" pos=" 0.0125  0         -0.0085"/>
+      <site name="b01" pos="-0.00625  0.010825 -0.0085"/>
+      <site name="b02" pos="-0.00625 -0.010825 -0.0085"/>
+
+      <!-- ===== DISC0 (fixed) ===== -->
+      <!-- Ball joint here is optional; disc0 is effectively immobile. Under tendon actuation, only the upper section is actuated. -->
+      <!-- In the geom, size controls half-height (half thickness). Adjust the joint position via the body's pos. -->
+      <body name="disc0" pos="0 0 0.00895">
+        <joint name="ball0" type="ball"/>
+        <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="1.0 0.0 0.0 1.0" group="1"/>
+        <site name="s00" pos=" 0.0125  0         0"/>
+        <site name="s01" pos="-0.00625  0.010825 0"/>
+        <site name="s02" pos="-0.00625 -0.010825 0"/>
+
+        <!-- ===== DISC1 ===== -->
+        <body name="disc1" pos="0 0 0.017">
+          <joint name="ball1" type="ball"/>
+          <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="1.0 0.4 0.0 1.0" group="1"/>
+          <site name="s10" pos=" 0.0125  0         0"/>
+          <site name="s11" pos="-0.00625  0.010825 0"/>
+          <site name="s12" pos="-0.00625 -0.010825 0"/>
+
+          <!-- ===== DISC2 ===== -->
+          <body name="disc2" pos="0 0 0.017">
+            <joint name="ball2" type="ball"/>
+            <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="1.0 0.6 0.0 1.0" group="1"/>
+            <site name="s20" pos=" 0.0125  0         0"/>
+            <site name="s21" pos="-0.00625  0.010825 0"/>
+            <site name="s22" pos="-0.00625 -0.010825 0"/>
+
+            <!-- ===== DISC3 ===== -->
+            <body name="disc3" pos="0 0 0.017">
+              <joint name="ball3" type="ball"/>
+              <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="1.0 0.8 0.0 1.0" group="1"/>
+              <site name="s30" pos=" 0.0125  0         0"/>
+              <site name="s31" pos="-0.00625  0.010825 0"/>
+              <site name="s32" pos="-0.00625 -0.010825 0"/>
+
+              <!-- ===== DISC4 ===== -->
+              <body name="disc4" pos="0 0 0.017">
+                <joint name="ball4" type="ball"/>
+                <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="1.0 1.0 0.0 1.0" group="1"/>
+                <site name="s40" pos=" 0.0125  0         0"/>
+                <site name="s41" pos="-0.00625  0.010825 0"/>
+                <site name="s42" pos="-0.00625 -0.010825 0"/>
+
+                <!-- ===== DISC5 (interface between lower & upper) ===== -->
+                <body name="disc5" pos="0 0 0.017">
+                  <joint name="ball5" type="ball"/>
+                  <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="0.6 1.0 0.0 1.0" group="1"/>
+                  <site name="s50" pos=" 0.0125  0         0"/>
+                  <site name="s51" pos="-0.00625  0.010825 0"/>
+                  <site name="s52" pos="-0.00625 -0.010825 0"/>
+
+                  <!-- ===== DISC6 ===== -->
+                  <body name="disc6" pos="0 0 0.017">
+                    <joint name="ball6" type="ball"/>
+                    <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="0.0 1.0 0.0 1.0" group="1"/>
+                    <site name="s60" pos=" 0.0125  0         0"/>
+                    <site name="s61" pos="-0.00625  0.010825 0"/>
+                    <site name="s62" pos="-0.00625 -0.010825 0"/>
+
+                    <!-- ===== DISC7 ===== -->
+                    <body name="disc7" pos="0 0 0.017">
+                      <joint name="ball7" type="ball"/>
+                      <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="0.0 1.0 1.0 1.0" group="1"/>
+                      <site name="s70" pos=" 0.0125  0         0"/>
+                      <site name="s71" pos="-0.00625  0.010825 0"/>
+                      <site name="s72" pos="-0.00625 -0.010825 0"/>
+
+                      <!-- ===== DISC8 ===== -->
+                      <body name="disc8" pos="0 0 0.017">
+                        <joint name="ball8" type="ball"/>
+                        <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="0.0 0.4 1.0 1.0" group="1"/>
+                        <site name="s80" pos=" 0.0125  0         0"/>
+                        <site name="s81" pos="-0.00625  0.010825 0"/>
+                        <site name="s82" pos="-0.00625 -0.010825 0"/>
+
+                          <!-- ===== DISC9 (TIP) ===== -->
+                        <body name="disc9" pos="0 0 0.017">
+                          <joint name="ball9" type="ball"/>
+                          <geom type="cylinder" size="0.02 0.0085" contype="0" conaffinity="0" rgba="0.6 0.0 1.0 1.0" group="1"/>
+                          <site name="s90" pos=" 0.0125  0         0"/>
+                          <site name="s91" pos="-0.00625  0.010825 0"/>
+                          <site name="s92" pos="-0.00625 -0.010825 0"/>
+                        
+                        </body><!-- disc8 end -->
+                      </body><!-- disc8 end -->
+                    </body><!-- disc7 end -->
+                  </body><!-- disc6 end -->
+                </body><!-- disc5 end -->
+              </body><!-- disc4 end -->
+            </body><!-- disc3 end -->
+          </body><!-- disc2 end -->
+        </body><!-- disc1 end -->
+      </body><!-- disc0 end -->
+    </body><!-- base end -->
+  </worldbody>
+
+  <tendon>
+    <spatial name="tendon1">
+      <site site="b00"/><site site="s00"/><site site="s10"/><site site="s20"/><site site="s30"/><site site="s40"/>
+    </spatial>
+    <spatial name="tendon2">
+      <site site="b01"/><site site="s01"/><site site="s11"/><site site="s21"/><site site="s31"/><site site="s41"/>
+    </spatial>
+    <spatial name="tendon3">
+      <site site="b02"/><site site="s02"/><site site="s12"/><site site="s22"/><site site="s32"/><site site="s42"/>
+    </spatial>
+
+    <spatial name="tendon4">
+      <site site="s40"/><site site="s50"/><site site="s60"/><site site="s70"/><site site="s80"/><site site="s90"/>
+    </spatial>
+    <spatial name="tendon5">
+      <site site="s41"/><site site="s51"/><site site="s61"/><site site="s71"/><site site="s81"/><site site="s91"/>
+    </spatial>
+    <spatial name="tendon6">
+      <site site="s42"/><site site="s52"/><site site="s62"/><site site="s72"/><site site="s82"/><site site="s92"/>
+    </spatial>
+  </tendon>
+
+  <actuator>
+    <!-- lower motors control discs 0-4 -->
+    <position name="motor1" tendon="tendon1" kp="500" ctrlrange="0 0.04"/>
+    <position name="motor2" tendon="tendon2" kp="500" ctrlrange="0 0.04"/>
+    <position name="motor3" tendon="tendon3" kp="500" ctrlrange="0 0.04"/>
+
+    <!-- upper motors control discs 5-9 -->
+    <position name="motor4" tendon="tendon4" kp="500" ctrlrange="0 0.04"/>
+    <position name="motor5" tendon="tendon5" kp="500" ctrlrange="0 0.04"/>
+    <position name="motor6" tendon="tendon6" kp="500" ctrlrange="0 0.04"/>
+  </actuator>
+
+</mujoco>

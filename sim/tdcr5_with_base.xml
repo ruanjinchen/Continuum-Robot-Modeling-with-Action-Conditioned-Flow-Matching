@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<mujoco model="TDCR">
+<!-- Mass decreases linearly from bottom to top to reduce tip wobble after motion. -->
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+  </visual>
+
+  <include file="scene.xml"/>
+
+  <option timestep="0.002" gravity="0 0 -9.81"/>
+
+  <asset>
+    <mesh name="base_mesh" file="base.stl"/>
+  </asset>
+
+  <default>
+    <geom density="25" friction="0.8 0.1 0.1" rgba="0.6 0.6 0.9 1"/>
+    <joint damping="0.1" armature="0.01" limited="false"/>
+    <site  size="0.002" rgba="1 0.4 0.4 1"/>
+  </default>
+
+  <worldbody>
+    <camera name="camera1" pos="0.000 -0.900 0.500" quat="0.77334 0.63399 -0.00000 -0.00000" fovy="60"/>
+    <camera name="camera2" pos="0.000 0.900 0.500" quat="-0.00000 0.00000 0.63399 0.77334" fovy="60"/>
+    <camera name="camera3" pos="0.900 0.000 0.500" quat="0.54684 0.44830 0.44830 0.54684" fovy="60"/>
+    <camera name="camera4" pos="-0.900 0.000 0.500" quat="-0.54684 -0.44830 0.44830 0.54684" fovy="60"/>
+    <camera name="camera5" pos="0.636 0.636 0.500" quat="0.29595 0.24262 0.58573 0.71448" fovy="60"/>
+    <camera name="camera6" pos="-0.636 0.636 0.500" quat="0.29595 0.24262 -0.58573 -0.71448" fovy="60"/>
+    <camera name="camera7" pos="-0.636 -0.636 0.500" quat="0.71448 0.58573 -0.24262 -0.29595" fovy="60"/>
+    <camera name="camera8" pos="0.636 -0.636 0.500" quat="0.71448 0.58573 0.24262 0.29595" fovy="60"/>
+
+
+    <body name="base" pos="0 0 0.174">
+      <!-- Light yellow base; 174 mm above ground. Put the offset in the body pos, not the geom. -->
+      <geom type="mesh" mesh="base_mesh" rgba="0.902 0.886 0.725 1.0" contype="0" conaffinity="0"  group="1"/>
+      <site name="b00" pos=" 0.0125  0         -0.0085"/>
+      <site name="b01" pos="-0.00625  0.010825 -0.0085"/>
+      <site name="b02" pos="-0.00625 -0.010825 -0.0085"/>
+
+      <!-- ===== DISC0 (fixed) ===== -->
+      <!-- Ball joint here is optional; disc0 is effectively immobile. Under tendon actuation, only the upper section is actuated. -->
+      <!-- In the geom, size controls half-height (half thickness). Adjust the joint position via the body's pos. -->
+      <body name="disc0" pos="0 0 0.00895">
+        <joint name="ball0" type="ball"/>
+        <geom density="25.000" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 0.000 1.0" group="1"/>
+        <site name="s00" pos=" 0.0125  0         0"/>
+        <site name="s01" pos="-0.00625  0.010825 0"/>
+        <site name="s02" pos="-0.00625 -0.010825 0"/>
+
+        <!-- ===== DISC1 ===== -->
+        <body name="disc1" pos="0 0 0.016">
+          <joint name="ball1" type="ball"/>
+          <geom density="24.167" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.250 0.000 1.0" group="1"/>
+          <site name="s10" pos=" 0.0125  0         0"/>
+          <site name="s11" pos="-0.00625  0.010825 0"/>
+          <site name="s12" pos="-0.00625 -0.010825 0"/>
+
+          <!-- ===== DISC2 ===== -->
+          <body name="disc2" pos="0 0 0.016">
+            <joint name="ball2" type="ball"/>
+            <geom density="23.333" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.500 0.000 1.0" group="1"/>
+            <site name="s20" pos=" 0.0125  0         0"/>
+            <site name="s21" pos="-0.00625  0.010825 0"/>
+            <site name="s22" pos="-0.00625 -0.010825 0"/>
+
+            <!-- ===== DISC3 ===== -->
+            <body name="disc3" pos="0 0 0.016">
+              <joint name="ball3" type="ball"/>
+              <geom density="22.500" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.750 0.000 1.0" group="1"/>
+              <site name="s30" pos=" 0.0125  0         0"/>
+              <site name="s31" pos="-0.00625  0.010825 0"/>
+              <site name="s32" pos="-0.00625 -0.010825 0"/>
+
+              <!-- ===== DISC4 ===== -->
+              <body name="disc4" pos="0 0 0.016">
+                <joint name="ball4" type="ball"/>
+                <geom density="21.667" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 1.000 0.000 1.0" group="1"/>
+                <site name="s40" pos=" 0.0125  0         0"/>
+                <site name="s41" pos="-0.00625  0.010825 0"/>
+                <site name="s42" pos="-0.00625 -0.010825 0"/>
+
+                <!-- ===== DISC5 (section 2) ===== -->
+                <body name="disc5" pos="0 0 0.016">
+                  <joint name="ball5" type="ball"/>
+                  <geom density="20.833" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.750 1.000 0.000 1.0" group="1"/>
+                  <site name="s50" pos=" 0.0125  0         0"/>
+                  <site name="s51" pos="-0.00625  0.010825 0"/>
+                  <site name="s52" pos="-0.00625 -0.010825 0"/>
+
+                  <!-- ===== DISC6 ===== -->
+                  <body name="disc6" pos="0 0 0.016">
+                    <joint name="ball6" type="ball"/>
+                    <geom density="20.000" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.500 1.000 0.000 1.0" group="1"/>
+                    <site name="s60" pos=" 0.0125  0         0"/>
+                    <site name="s61" pos="-0.00625  0.010825 0"/>
+                    <site name="s62" pos="-0.00625 -0.010825 0"/>
+
+                    <!-- ===== DISC7 ===== -->
+                    <body name="disc7" pos="0 0 0.016">
+                      <joint name="ball7" type="ball"/>
+                      <geom density="19.167" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.250 1.000 0.000 1.0" group="1"/>
+                      <site name="s70" pos=" 0.0125  0         0"/>
+                      <site name="s71" pos="-0.00625  0.010825 0"/>
+                      <site name="s72" pos="-0.00625 -0.010825 0"/>
+
+                      <!-- ===== DISC8 ===== -->
+                      <body name="disc8" pos="0 0 0.016">
+                        <joint name="ball8" type="ball"/>
+                        <geom density="18.333" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 1.000 0.000 1.0" group="1"/>
+                        <site name="s80" pos=" 0.0125  0         0"/>
+                        <site name="s81" pos="-0.00625  0.010825 0"/>
+                        <site name="s82" pos="-0.00625 -0.010825 0"/>
+
+                        <!-- ===== DISC9 (TIP) ===== -->
+                        <body name="disc9" pos="0 0 0.016">
+                          <joint name="ball9" type="ball"/>
+                          <geom density="17.500" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 1.000 0.250 1.0" group="1"/>
+                          <site name="s90" pos=" 0.0125  0         0"/>
+                          <site name="s91" pos="-0.00625  0.010825 0"/>
+                          <site name="s92" pos="-0.00625 -0.010825 0"/>
+                          
+                          <!-- ===== DISC10 (section 3) ===== -->
+                          <body name="disc10" pos="0 0 0.016">
+                            <joint name="ball10" type="ball"/>
+                            <geom density="16.667" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 1.000 0.500 1.0" group="1"/>
+                            <site name="s100" pos=" 0.0125  0         0"/>
+                            <site name="s101" pos="-0.00625  0.010825 0"/>
+                            <site name="s102" pos="-0.00625 -0.010825 0"/>
+                            
+                            <!-- ===== DISC11 (TIP) ===== -->
+                            <body name="disc11" pos="0 0 0.016">
+                              <joint name="ball11" type="ball"/>
+                              <geom density="15.833" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 1.000 0.750 1.0" group="1"/>
+                              <site name="s110" pos=" 0.0125  0         0"/>
+                              <site name="s111" pos="-0.00625  0.010825 0"/>
+                              <site name="s112" pos="-0.00625 -0.010825 0"/>
+                              
+                              <!-- ===== DISC12 (TIP) ===== -->
+                              <body name="disc12" pos="0 0 0.016">
+                                <joint name="ball12" type="ball"/>
+                                <geom density="15.000" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 1.000 1.000 1.0" group="1"/>
+                                <site name="s120" pos=" 0.0125  0         0"/>
+                                <site name="s121" pos="-0.00625  0.010825 0"/>
+                                <site name="s122" pos="-0.00625 -0.010825 0"/>
+
+                                <!-- ===== DISC13 (TIP) ===== -->
+                                <body name="disc13" pos="0 0 0.016">
+                                  <joint name="ball13" type="ball"/>
+                                  <geom density="14.167" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 0.750 1.000 1.0" group="1"/>
+                                  <site name="s130" pos=" 0.0125  0         0"/>
+                                  <site name="s131" pos="-0.00625  0.010825 0"/>
+                                  <site name="s132" pos="-0.00625 -0.010825 0"/>
+                                    
+                                  <!-- ===== DISC14 (TIP) ===== -->
+                                  <body name="disc14" pos="0 0 0.016">
+                                    <joint name="ball14" type="ball"/>
+                                    <geom density="13.333" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 0.500 1.000 1.0" group="1"/>
+                                    <site name="s140" pos=" 0.0125  0         0"/>
+                                    <site name="s141" pos="-0.00625  0.010825 0"/>
+                                    <site name="s142" pos="-0.00625 -0.010825 0"/>
+
+                                    <!-- ===== DISC15 (section 4) ===== -->
+                                    <body name="disc15" pos="0 0 0.016">
+                                      <joint name="ball15" type="ball"/>
+                                      <geom density="12.500" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 0.250 1.000 1.0" group="1"/>
+                                      <site name="s150" pos=" 0.0125  0         0"/>
+                                      <site name="s151" pos="-0.00625  0.010825 0"/>
+                                      <site name="s152" pos="-0.00625 -0.010825 0"/>
+
+                                      <!-- ===== DISC16 (TIP) ===== -->
+                                      <body name="disc16" pos="0 0 0.016">
+                                        <joint name="ball16" type="ball"/>
+                                        <geom density="11.667" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.000 0.000 1.000 1.0" group="1"/>
+                                        <site name="s160" pos=" 0.0125  0         0"/>
+                                        <site name="s161" pos="-0.00625  0.010825 0"/>
+                                        <site name="s162" pos="-0.00625 -0.010825 0"/>
+
+                                        <!-- ===== DISC17 (TIP) ===== -->
+                                        <body name="disc17" pos="0 0 0.016">
+                                          <joint name="ball17" type="ball"/>
+                                          <geom density="10.833" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.250 0.000 1.000 1.0" group="1"/>
+                                          <site name="s170" pos=" 0.0125  0         0"/>
+                                          <site name="s171" pos="-0.00625  0.010825 0"/>
+                                          <site name="s172" pos="-0.00625 -0.010825 0"/>
+
+                                          <!-- ===== DISC18 (TIP) ===== -->
+                                          <body name="disc18" pos="0 0 0.016">
+                                            <joint name="ball18" type="ball"/>
+                                            <geom density="10.000" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.500 0.000 1.000 1.0" group="1"/>
+                                            <site name="s180" pos=" 0.0125  0         0"/>
+                                            <site name="s181" pos="-0.00625  0.010825 0"/>
+                                            <site name="s182" pos="-0.00625 -0.010825 0"/>
+
+                                            <!-- ===== DISC19 (TIP) ===== -->
+                                            <body name="disc19" pos="0 0 0.016">
+                                              <joint name="ball19" type="ball"/>
+                                              <geom density="9.167" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="0.750 0.000 1.000 1.0" group="1"/>
+                                              <site name="s190" pos=" 0.0125  0         0"/>
+                                              <site name="s191" pos="-0.00625  0.010825 0"/>
+                                              <site name="s192" pos="-0.00625 -0.010825 0"/>
+
+                                              <!-- ===== DISC20 (section 5) ===== -->
+                                              <body name="disc20" pos="0 0 0.016">
+                                                <joint name="ball20" type="ball"/>
+                                                <geom density="8.333" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 1.000 1.0" group="1"/>
+                                                <site name="s200" pos=" 0.0125  0         0"/>
+                                                <site name="s201" pos="-0.00625  0.010825 0"/>
+                                                <site name="s202" pos="-0.00625 -0.010825 0"/>
+                                              
+                                                <!-- ===== DISC21 (TIP) ===== -->
+                                                <body name="disc21" pos="0 0 0.016">
+                                                  <joint name="ball21" type="ball"/>
+                                                  <geom density="7.500" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 0.750 1.0" group="1"/>
+                                                  <site name="s210" pos=" 0.0125  0         0"/>
+                                                  <site name="s211" pos="-0.00625  0.010825 0"/>
+                                                  <site name="s212" pos="-0.00625 -0.010825 0"/>
+
+                                                  <!-- ===== DISC22 (TIP) ===== -->
+                                                  <body name="disc22" pos="0 0 0.016">
+                                                    <joint name="ball22" type="ball"/>
+                                                    <geom density="6.667" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 0.500 1.0" group="1"/>
+                                                    <site name="s220" pos=" 0.0125  0         0"/>
+                                                    <site name="s221" pos="-0.00625  0.010825 0"/>
+                                                    <site name="s222" pos="-0.00625 -0.010825 0"/>
+
+                                                    <!-- ===== DISC23 (TIP) ===== -->
+                                                    <body name="disc23" pos="0 0 0.016">
+                                                      <joint name="ball23" type="ball"/>
+                                                      <geom density="5.833" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 0.250 1.0" group="1"/>
+                                                      <site name="s230" pos=" 0.0125  0         0"/>
+                                                      <site name="s231" pos="-0.00625  0.010825 0"/>
+                                                      <site name="s232" pos="-0.00625 -0.010825 0"/>
+
+                                                      <!-- ===== DISC24 (TIP) ===== -->
+                                                      <body name="disc24" pos="0 0 0.016">
+                                                        <joint name="ball24" type="ball"/>
+                                                        <geom density="5.000" type="cylinder" size="0.02 0.008" contype="0" conaffinity="0" rgba="1.000 0.000 0.000 1.0" group="1"/>
+                                                        <site name="s240" pos=" 0.0125  0         0"/>
+                                                        <site name="s241" pos="-0.00625  0.010825 0"/>
+                                                        <site name="s242" pos="-0.00625 -0.010825 0"/>
+                                                  
+                                                      </body><!-- disc24 end -->
+                                                    </body><!-- disc23 end -->
+                                                  </body><!-- disc22 end -->
+                                                </body><!-- disc21 end -->
+                                              </body><!-- disc20 end -->
+                                            </body><!-- disc19 end -->
+                                          </body><!-- disc18 end -->
+                                        </body><!-- disc17 end -->
+                                      </body><!-- disc16 end -->
+                                    </body><!-- disc15 end -->
+                                  </body><!-- disc14 end -->
+                                </body><!-- disc13 end -->
+                              </body><!-- disc12 end -->
+                            </body><!-- disc11 end -->
+                          </body><!-- disc10 end -->
+                        </body><!-- disc9 end -->
+                      </body><!-- disc8 end -->
+                    </body><!-- disc7 end -->
+                  </body><!-- disc6 end -->
+                </body><!-- disc5 end -->
+              </body><!-- disc4 end -->
+            </body><!-- disc3 end -->
+          </body><!-- disc2 end -->
+        </body><!-- disc1 end -->
+      </body><!-- disc0 end -->
+    </body><!-- base end -->
+  </worldbody>
+
+  <tendon>
+    <spatial name="tendon1">
+      <site site="b00"/><site site="s00"/><site site="s10"/><site site="s20"/><site site="s30"/><site site="s40"/>
+    </spatial>
+    <spatial name="tendon2">
+      <site site="b01"/><site site="s01"/><site site="s11"/><site site="s21"/><site site="s31"/><site site="s41"/>
+    </spatial>
+    <spatial name="tendon3">
+      <site site="b02"/><site site="s02"/><site site="s12"/><site site="s22"/><site site="s32"/><site site="s42"/>
+    </spatial>
+
+    <spatial name="tendon4">
+      <site site="s40"/><site site="s50"/><site site="s60"/><site site="s70"/><site site="s80"/><site site="s90"/>
+    </spatial>
+    <spatial name="tendon5">
+      <site site="s41"/><site site="s51"/><site site="s61"/><site site="s71"/><site site="s81"/><site site="s91"/>
+    </spatial>
+    <spatial name="tendon6">
+      <site site="s42"/><site site="s52"/><site site="s62"/><site site="s72"/><site site="s82"/><site site="s92"/>
+    </spatial>
+  
+    <spatial name="tendon7">
+      <site site="s90"/><site site="s100"/><site site="s110"/><site site="s120"/><site site="s130"/><site site="s140"/>
+    </spatial>
+    <spatial name="tendon8">
+      <site site="s91"/><site site="s101"/><site site="s111"/><site site="s121"/><site site="s131"/><site site="s141"/>
+    </spatial>
+    <spatial name="tendon9">
+      <site site="s92"/><site site="s102"/><site site="s112"/><site site="s122"/><site site="s132"/><site site="s142"/>
+    </spatial>
+
+    <spatial name="tendon10">
+      <site site="s140"/><site site="s150"/><site site="s160"/><site site="s170"/><site site="s180"/><site site="s190"/>
+    </spatial>
+    <spatial name="tendon11">
+      <site site="s141"/><site site="s151"/><site site="s161"/><site site="s171"/><site site="s181"/><site site="s191"/>
+    </spatial>
+    <spatial name="tendon12">
+      <site site="s142"/><site site="s152"/><site site="s162"/><site site="s172"/><site site="s182"/><site site="s192"/>
+    </spatial>
+
+    <spatial name="tendon13">
+      <site site="s190"/><site site="s200"/><site site="s210"/><site site="s220"/><site site="s230"/><site site="s240"/>
+    </spatial>
+    <spatial name="tendon14">
+      <site site="s191"/><site site="s201"/><site site="s211"/><site site="s221"/><site site="s231"/><site site="s241"/>
+    </spatial>
+    <spatial name="tendon15">
+      <site site="s192"/><site site="s202"/><site site="s212"/><site site="s222"/><site site="s232"/><site site="s242"/>
+    </spatial>
+
+  </tendon>
+
+  <actuator>
+    <!-- 1 motors control discs 0-4 -->
+    <position name="motor1" tendon="tendon1" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor2" tendon="tendon2" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor3" tendon="tendon3" kp="700" ctrlrange="0 0.04"/>
+
+    <!-- 2 motors control discs 5-9 -->
+    <position name="motor4" tendon="tendon4" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor5" tendon="tendon5" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor6" tendon="tendon6" kp="700" ctrlrange="0 0.04"/>
+
+    <!-- 3 motors control discs 10-14 -->
+    <position name="motor7" tendon="tendon7" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor8" tendon="tendon8" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor9" tendon="tendon9" kp="700" ctrlrange="0 0.04"/>
+
+    <!-- 4 motors control discs 15-19 -->
+    <position name="motor10" tendon="tendon10" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor11" tendon="tendon11" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor12" tendon="tendon12" kp="700" ctrlrange="0 0.04"/>
+
+    <!-- 5 motors control discs 20-24 -->
+    <position name="motor13" tendon="tendon13" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor14" tendon="tendon14" kp="700" ctrlrange="0 0.04"/>
+    <position name="motor15" tendon="tendon15" kp="700" ctrlrange="0 0.04"/>
+
+  </actuator>
+
+</mujoco>
