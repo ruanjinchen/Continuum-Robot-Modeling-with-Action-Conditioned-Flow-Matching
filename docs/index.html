@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Continuum Robot Modeling with Action Conditioned Flow Matching</title>
+  <meta name="description" content="RSS 2026 project page for action-conditioned flow matching for tendon-driven continuum robot shape prediction." />
+  <meta name="author" content="Jiong Lin, Jinchen Ruan, Hod Lipson" />
+  <meta property="og:title" content="Continuum Robot Modeling with Action Conditioned Flow Matching" />
+  <meta property="og:description" content="A data-driven self-modeling framework that predicts dense settled TDCR geometry from motor actuation states." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/teaser.webp" />
+  <link rel="canonical" href="https://ruanjinchen.github.io/Continuum-Robot-Modeling-with-Action-Conditioned-Flow-Matching/" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" aria-label="Primary navigation">
+    <nav class="nav shell">
+      <a class="brand" href="#top" aria-label="Project home">
+        <span class="brand-mark">TDCR</span>
+        <span class="brand-text">Action-Conditioned Flow Matching</span>
+      </a>
+      <div class="nav-links" aria-label="Section links">
+        <a href="#overview">Overview</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#code">Code</a>
+        <a href="#citation">Citation</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero section-pad">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow-row">
+            <span class="eyebrow">RSS 2026 Project Page</span>
+            <span class="eyebrow subtle">Tendon-Driven Continuum Robots</span>
+          </div>
+          <h1>Continuum Robot Modeling with Action Conditioned Flow Matching</h1>
+          <p class="lead">
+            A point-cloud flow matching self-model that predicts the settled 3D geometry of tendon-driven continuum robots directly from motor actuation states.
+          </p>
+          <p class="authors">
+            <strong>Jiong Lin</strong><sup>1,*</sup>, <strong>Jinchen Ruan</strong><sup>1,*</sup>, and <strong>Hod Lipson</strong><sup>1</sup>
+          </p>
+          <p class="affiliation"><sup>1</sup>Department of Mechanical Engineering, Columbia University · <sup>*</sup>Equal contribution</p>
+          <div class="cta-row" role="group" aria-label="Project links">
+            <a class="button primary" href="assets/continuum_robot_modeling_action_conditioned_flow_matching.pdf">Paper PDF</a>
+            <a class="button" href="https://github.com/ruanjinchen/Continuum-Robot-Modeling-with-Action-Conditioned-Flow-Matching">Code</a>
+            <a class="button" href="https://anonymous-for-submit.s3.us-east-1.amazonaws.com/tdcr-checkpoints.zip">Checkpoints</a>
+            <a class="button ghost" href="#code">Quickstart</a>
+          </div>
+        </div>
+        <a class="hero-figure framed-image" href="assets/teaser.webp" aria-label="Open teaser image">
+          <img src="assets/teaser.webp" alt="Overview of the TDCR data collection and action-conditioned flow matching prediction pipeline." loading="eager" />
+        </a>
+      </div>
+    </section>
+
+    <section id="overview" class="section-pad compact-top">
+      <div class="shell two-col">
+        <div>
+          <p class="section-kicker">Overview</p>
+          <h2>Predicting dense TDCR shape from action</h2>
+          <p>
+            Tendon-driven continuum robots deform continuously along compliant backbones, and their observed shape is affected by tendon routing, friction, fabrication variability, and external loading. This project treats steady-state TDCR modeling as <strong>action-conditioned quasi-static self modeling</strong>: given a motor command, the model predicts the robot's settled full-body point cloud.
+          </p>
+          <p>
+            The system combines a lightweight 3D printed TDCR hardware platform, multi-camera RGB-D data collection, and a conditional flow matching model that transports a Gaussian point set into the observed robot geometry.
+          </p>
+        </div>
+        <div class="card abstract-card">
+          <h3>Core idea</h3>
+          <p>
+            Learn a conditional velocity field in point space. At inference, sample a Gaussian point cloud and integrate the learned ODE under a query motor condition to generate the predicted steady-state TDCR geometry.
+          </p>
+          <div class="stat-grid">
+            <div><span>2 / 3 / 5</span><small>module settings</small></div>
+            <div><span>4</span><small>RGB-D cameras</small></div>
+            <div><span>20k</span><small>training points/sample</small></div>
+            <div><span>100</span><small>Heun RK2 steps</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shell contribution-grid">
+        <article class="card contribution-card">
+          <span class="card-number">01</span>
+          <h3>TDCR platform and capture pipeline</h3>
+          <p>A configurable 3D printed TDCR platform with multi-view RGB-D capture for real hardware self-modeling data.</p>
+        </article>
+        <article class="card contribution-card">
+          <span class="card-number">02</span>
+          <h3>Action-conditioned point flow matching</h3>
+          <p>A conditional point-cloud generative model that maps motor states, and optionally payload, to dense settled 3D geometry.</p>
+        </article>
+        <article class="card contribution-card">
+          <span class="card-number">03</span>
+          <h3>Simulation and hardware evaluation</h3>
+          <p>Systematic comparison against VSM, PointFlow/CNF, NeRF-style self simulation, and articulated 3D Gaussian Splatting baselines.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="method" class="section-pad tinted">
+      <div class="shell section-heading">
+        <p class="section-kicker">Method</p>
+        <h2>Flow matching in point space</h2>
+        <p>
+          The model is trained on pairs of settled point clouds and conditions. The condition is the normalized motor vector for standard experiments, and the motor vector concatenated with a normalized scalar payload in the payload-conditioned simulation extension.
+        </p>
+      </div>
+      <div class="shell">
+        <a class="framed-image wide-figure" href="assets/method.webp" aria-label="Open method figure">
+          <img src="assets/method.webp" alt="Training and prediction diagram for action-conditioned flow matching." loading="lazy" />
+        </a>
+      </div>
+      <div class="shell method-grid">
+        <article class="card">
+          <h3>Training path</h3>
+          <p>Sample a Gaussian point cloud X<sub>0</sub>, pair it with a ground-truth settled point cloud X<sub>1</sub>, interpolate X<sub>t</sub> = (1 - t)X<sub>0</sub> + tX<sub>1</sub>, and regress the transport velocity X<sub>1</sub> - X<sub>0</sub>.</p>
+        </article>
+        <article class="card">
+          <h3>Condition injection</h3>
+          <p>Time and action embeddings are fused and injected with FiLM modulation. Two velocity networks are evaluated: a lightweight shared MLP and a Hybrid PVConv context model.</p>
+        </article>
+        <article class="card">
+          <h3>Prediction</h3>
+          <p>For a query condition, integrate the learned generative ODE from noise to the final point cloud using Heun RK2 sampling and EMA weights.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="hardware" class="section-pad">
+      <div class="shell two-col image-first">
+        <a class="framed-image" href="assets/hardware.webp" aria-label="Open hardware image">
+          <img src="assets/hardware.webp" alt="TDCR CAD, 3D-printing support, actuation base, and real hardware capture setup." loading="lazy" />
+        </a>
+        <div>
+          <p class="section-kicker">Hardware and data</p>
+          <h2>RGB-D self-modeling data from real TDCRs</h2>
+          <p>
+            Real hardware datasets are collected on physical 2-module and 3-module TDCRs. Four calibrated Intel RealSense D435 cameras surround the robot, fuse synchronized RGB-D views into a shared world frame, and produce colored point clouds for learning.
+          </p>
+          <p>
+            In simulation, MuJoCo TDCR scenes cover 2-, 3-, and 5-module morphologies with no-base and with-base observation settings. The same representation and normalization pipeline is used across simulation and hardware.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="section-pad tinted">
+      <div class="shell section-heading">
+        <p class="section-kicker">Results</p>
+        <h2>Lower geometric error across simulation and real hardware</h2>
+        <p>
+          Evaluation uses Chamfer Distance (CD) and Earth Mover's Distance (EMD) on metric-scale point clouds with 10,000 evaluation points. Lower is better.
+        </p>
+      </div>
+
+      <div class="shell result-callouts">
+        <article class="card result-card">
+          <h3>Simulation</h3>
+          <p>Hybrid achieves the lowest CD and EMD across all six standard simulated settings.</p>
+          <strong>64-96% CD reduction</strong>
+          <small>relative to the strongest non-ours baseline per setting</small>
+        </article>
+        <article class="card result-card">
+          <h3>Real hardware</h3>
+          <p>The best of the MLP and Hybrid variants improves over the strongest point-based baseline.</p>
+          <strong>33.5% / 20.3% CD reduction</strong>
+          <small>on Real-2m / Real-3m versus PointFlow</small>
+        </article>
+        <article class="card result-card">
+          <h3>Payload conditioning</h3>
+          <p>The same conditional formulation extends to a scalar gravity-aligned tip payload in simulation.</p>
+          <strong>Motor + payload</strong>
+          <small>as the conditioning vector</small>
+        </article>
+      </div>
+
+      <div class="shell">
+        <a class="framed-image wide-figure" href="assets/qualitative_results.webp" aria-label="Open qualitative results image">
+          <img src="assets/qualitative_results.webp" alt="Qualitative prediction comparison across simulated and real TDCR datasets." loading="lazy" />
+        </a>
+      </div>
+
+      <div class="shell table-stack">
+        <section class="card table-card">
+          <div class="table-title-row">
+            <h3>Simulation steady-state shape prediction</h3>
+            <span>CD × 10<sup>4</sup> / EMD × 10<sup>3</sup></span>
+          </div>
+          <div class="table-scroll" role="region" aria-label="Simulation results table" tabindex="0">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>2m-NB CD</th><th>2m-WB CD</th><th>3m-NB CD</th><th>3m-WB CD</th><th>5m-NB CD</th><th>5m-WB CD</th>
+                  <th>2m-NB EMD</th><th>2m-WB EMD</th><th>3m-NB EMD</th><th>3m-WB EMD</th><th>5m-NB EMD</th><th>5m-WB EMD</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th>VSM</th><td>14.773</td><td>10.065</td><td>92.509</td><td>32.494</td><td>105.017</td><td>12.827</td><td>5.795</td><td>4.881</td><td>19.990</td><td>7.386</td><td>19.470</td><td>7.112</td></tr>
+                <tr><th>PointFlow</th><td>0.359</td><td>0.461</td><td>2.172</td><td>1.013</td><td>19.790</td><td>6.788</td><td>0.598</td><td>1.041</td><td>1.362</td><td>1.203</td><td>5.453</td><td>3.227</td></tr>
+                <tr><th>NeRF</th><td>0.341</td><td>0.953</td><td>0.650</td><td>0.974</td><td>6.552</td><td>4.309</td><td>1.009</td><td>2.263</td><td>2.958</td><td>2.035</td><td>9.753</td><td>15.854</td></tr>
+                <tr><th>3DGS</th><td>0.447</td><td>0.373</td><td>1.053</td><td>1.205</td><td>19.201</td><td>63.781</td><td>0.461</td><td>3.779</td><td>0.847</td><td>4.837</td><td>4.849</td><td>14.652</td></tr>
+                <tr><th>Ours (MLP)</th><td>0.100</td><td>0.147</td><td>0.158</td><td>0.194</td><td>0.260</td><td>0.260</td><td>0.230</td><td>0.587</td><td>0.349</td><td>0.672</td><td>0.870</td><td>1.110</td></tr>
+                <tr class="best-row"><th>Ours (Hybrid)</th><td>0.088</td><td>0.135</td><td>0.136</td><td>0.164</td><td>0.253</td><td>0.239</td><td>0.204</td><td>0.516</td><td>0.329</td><td>0.578</td><td>0.832</td><td>1.059</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="two-tables">
+          <section class="card table-card">
+            <div class="table-title-row">
+              <h3>Real hardware</h3>
+              <span>CD × 10<sup>4</sup> / EMD × 10<sup>3</sup></span>
+            </div>
+            <div class="table-scroll" role="region" aria-label="Real hardware results table" tabindex="0">
+              <table>
+                <thead><tr><th>Method</th><th>Real-2m CD</th><th>Real-3m CD</th><th>Real-2m EMD</th><th>Real-3m EMD</th></tr></thead>
+                <tbody>
+                  <tr><th>VSM</th><td>2.287</td><td>1.525</td><td>4.426</td><td>5.363</td></tr>
+                  <tr><th>PointFlow</th><td>0.340</td><td>0.266</td><td>0.828</td><td>0.672</td></tr>
+                  <tr><th>NeRF</th><td>9.569</td><td>10.377</td><td>11.111</td><td>9.251</td></tr>
+                  <tr><th>3DGS</th><td>1.030</td><td>0.809</td><td>12.592</td><td>14.952</td></tr>
+                  <tr><th>Ours (MLP)</th><td class="best-cell">0.226</td><td>0.215</td><td class="best-cell">0.522</td><td class="best-cell">0.507</td></tr>
+                  <tr><th>Ours (Hybrid)</th><td>0.234</td><td class="best-cell">0.212</td><td>0.575</td><td>0.548</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card table-card">
+            <div class="table-title-row">
+              <h3>Payload-conditioned simulation</h3>
+              <span>CD × 10<sup>4</sup> / EMD × 10<sup>3</sup></span>
+            </div>
+            <div class="table-scroll" role="region" aria-label="Payload results table" tabindex="0">
+              <table>
+                <thead><tr><th>Method</th><th>2m CD</th><th>3m CD</th><th>5m CD</th><th>2m EMD</th><th>3m EMD</th><th>5m EMD</th></tr></thead>
+                <tbody>
+                  <tr><th>Ours (MLP)</th><td>0.393</td><td>0.386</td><td class="best-cell">0.741</td><td>0.992</td><td>0.826</td><td class="best-cell">1.272</td></tr>
+                  <tr><th>Ours (Hybrid)</th><td class="best-cell">0.340</td><td class="best-cell">0.378</td><td>1.780</td><td class="best-cell">0.709</td><td class="best-cell">0.701</td><td>1.290</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="shell two-col image-first lower-gap">
+        <a class="framed-image" href="assets/simulation.webp" aria-label="Open simulation figure">
+          <img src="assets/simulation.webp" alt="MuJoCo TDCR renderings for 2-, 3-, and 5-module settings." loading="lazy" />
+        </a>
+        <a class="framed-image" href="assets/payload.webp" aria-label="Open payload-conditioned prediction figure">
+          <img src="assets/payload.webp" alt="Payload-conditioned ground truth and prediction overlays." loading="lazy" />
+        </a>
+      </div>
+    </section>
+
+    <section id="code" class="section-pad">
+      <div class="shell section-heading">
+        <p class="section-kicker">Code and demo</p>
+        <h2>Run the released implementation</h2>
+        <p>
+          The repository implements the TDCR dataset pipeline, action-conditioned flow matching training, and checkpoint-based demo inference in PyTorch.
+        </p>
+      </div>
+      <div class="shell code-grid">
+        <article class="card code-card">
+          <h3>Install</h3>
+<pre><code>conda create -y -n tdcr python=3.12
+conda activate tdcr
+pip install -r requirements.txt</code></pre>
+        </article>
+        <article class="card code-card">
+          <h3>Download checkpoints</h3>
+<pre><code>mkdir -p checkpoints
+wget -O tdcr-checkpoints.zip \
+  https://anonymous-for-submit.s3.us-east-1.amazonaws.com/tdcr-checkpoints.zip
+unzip -o tdcr-checkpoints.zip -d checkpoints
+rm tdcr-checkpoints.zip</code></pre>
+        </article>
+        <article class="card code-card wide-code">
+          <h3>Real 2-module demo</h3>
+<pre><code>python demo.py \
+  --ckpt checkpoints/real_2m_with_base_hybrid.pt \
+  --test_dir demo/test/real_2m_with_base \
+  --demo_out test_demo/real_2m_with_base_hybrid \
+  --eval_norm_json sim/dataset_norm_json/real_2m_with_base.json \
+  --sample_steps 100 \
+  --batch_size 16</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="paper" class="section-pad tinted">
+      <div class="shell two-col paper-panel">
+        <div>
+          <p class="section-kicker">Paper</p>
+          <h2>Manuscript PDF</h2>
+          <p>
+            The PDF included here was compiled from the provided Overleaf project. Replace it with the camera-ready or arXiv version when that version is available.
+          </p>
+          <div class="cta-row">
+            <a class="button primary" href="assets/continuum_robot_modeling_action_conditioned_flow_matching.pdf">Open PDF</a>
+            <a class="button" href="#citation">Copy citation</a>
+          </div>
+        </div>
+        <a class="paper-preview" href="assets/continuum_robot_modeling_action_conditioned_flow_matching.pdf" aria-label="Open paper PDF">
+          <img src="assets/paper_preview.webp" alt="Preview of the first page of the manuscript." loading="lazy" />
+        </a>
+      </div>
+    </section>
+
+    <section id="citation" class="section-pad">
+      <div class="shell citation-wrap">
+        <div>
+          <p class="section-kicker">Citation</p>
+          <h2>Cite this work</h2>
+          <p>Use this placeholder BibTeX entry until the final RSS proceedings metadata is available.</p>
+        </div>
+        <div class="card citation-card">
+          <button class="copy-button" type="button" data-copy-target="bibtex">Copy BibTeX</button>
+<pre id="bibtex"><code>@inproceedings{lin2026continuum,
+  title     = {Continuum Robot Modeling with Action Conditioned Flow Matching},
+  author    = {Lin, Jiong and Ruan, Jinchen and Lipson, Hod},
+  booktitle = {Robotics: Science and Systems (RSS)},
+  year      = {2026}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <p>© <span id="year">2026</span> Columbia University · Continuum Robot Modeling with Action Conditioned Flow Matching</p>
+      <div class="footer-links">
+        <a href="#top">Top</a>
+        <a href="assets/continuum_robot_modeling_action_conditioned_flow_matching.pdf">Paper</a>
+        <a href="https://github.com/ruanjinchen/Continuum-Robot-Modeling-with-Action-Conditioned-Flow-Matching">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>
